@@ -3,28 +3,18 @@ import { KCP } from "jskcp";
 import { Duplex, DuplexOptions } from "stream";
 import { log } from "./log";
 
-const interval = 10;
+const interval = 50;
 
 export interface IConnectionInfo {
     host: string;
     port: number;
 }
 
-const encodeConnectionInfo = (info: IConnectionInfo) => {
-    log("encodeConnectionInfo", info);
-    // tslint:disable:no-bitwise
-    const buffer = Buffer.alloc(256);
-    buffer.write(info.host, 0, 254);
-    buffer[254] = info.port & 255;
-    buffer[255] = info.port >> 8;
-    return buffer;
-};
-
 export class KCPStream extends Duplex {
     private client: Socket;
     private kcp: KCP;
     private updateIntervalID: NodeJS.Timeout;
-    constructor(connectionInfo: IConnectionInfo, serverContext: any, options?: DuplexOptions) {
+    constructor(serverContext: any, options?: DuplexOptions) {
         super(options);
         this.client = createSocket("udp4");
         this.kcp = new KCP(666, serverContext);
@@ -39,7 +29,6 @@ export class KCPStream extends Duplex {
             this.emit("error");
             this.end();
         });
-        this.kcp.send(encodeConnectionInfo(connectionInfo));
         log("New KCPClient created");
     }
     public _write(chunk: any, encoding: string, callback: (error?: Error | null) => void) {
