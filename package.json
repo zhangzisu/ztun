@@ -5,11 +5,13 @@
     "jskcp": "^1.0.0",
     "path": "^0.12.7",
     "socksv5": "^0.0.6",
-    "typescript": "^3.2.2"
+    "typescript": "^3.2.2",
+    "uuid": "^3.3.2"
   },
   "devDependencies": {
     "@types/debug": "^0.0.31",
     "@types/ip": "^1.1.0",
-    "@types/node": "^10.12.18"
+    "@types/node": "^10.12.18",
+    "@types/uuid": "^3.4.4"
   }
 }

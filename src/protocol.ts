@@ -3,6 +3,18 @@ import debug = require("debug");
 import { config } from "./config";
 const log = debug("ztun:protocol");
 
+export const parseMsg = (msg: Buffer) => {
+    if (msg.length < 4) {
+        return undefined;
+    } else {
+        const header = msg.slice(0, 4);
+        const chunk = msg.slice(4);
+        // tslint:disable-next-line:no-bitwise
+        const session = ((header[0] << 8 | header[1]) << 8 | header[2]) << 8 | header[3];
+        return { session, chunk };
+    }
+};
+
 export enum ConnectionType {
     common = 0x0,
     reserve = 0x1,

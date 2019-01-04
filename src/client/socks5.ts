@@ -3,7 +3,7 @@ import { config } from "../config";
 import { Cipher, ConnectionType, Decipher, encodeConnectionInfo } from "../protocol";
 import { createSocks5 } from "../socks5";
 import { KCPStream } from "./kcpstream";
-import { log } from "./log";
+import { log, verbose } from "./log";
 
 export const createSocks5Server = () => {
     const serverContext = {
@@ -12,7 +12,7 @@ export const createSocks5Server = () => {
     };
 
     createSocks5(config.client.socks5.bindPort, config.client.socks5.bindHost, (info, socket) => {
-        log(`Connect to ${info.dstAddr}:${info.dstPort}`);
+        verbose(`Connect to ${info.dstAddr}:${info.dstPort}`);
         const stream = new KCPStream(serverContext);
         const cipher = Cipher();
         cipher.pipe(stream);

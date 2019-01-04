@@ -2,9 +2,7 @@ import { createSocket, Socket } from "dgram";
 import { KCP } from "jskcp";
 import { Duplex, DuplexOptions } from "stream";
 import { config } from "../config";
-import { log } from "./log";
-
-const interval = 50;
+import { log, verbose } from "./log";
 
 export class KCPStream extends Duplex {
     private client: Socket;
@@ -13,22 +11,22 @@ export class KCPStream extends Duplex {
     constructor(serverContext: any, options?: DuplexOptions) {
         super(options);
         this.client = createSocket("udp4");
-        this.kcp = new KCP(config.conv, serverContext);
-        this.kcp.nodelay(1, interval, 2, 1);
+        this.kcp = new KCP(config.common.conv, serverContext);
+        this.kcp.nodelay(config.common.nodelay, config.common.interval, config.common.resend, config.common.nc);
         this.kcp.output((data, size, context) => this.client.send(data, 0, size, context.port, context.address));
         this.updateIntervalID = setInterval(() => {
             this.kcp.update(Date.now());
-        }, interval);
+        }, config.common.interval);
         this.client.on("message", (msg) => this.feed(msg));
         this.client.on("error", (err) => {
             log(err.stack);
             this.emit("error");
             this.end();
         });
-        log("New KCPClient created");
+        verbose("New KCPClient created");
     }
     public _write(chunk: any, encoding: string, callback: (error?: Error | null) => void) {
-        log("KCPClient write data length = " + chunk.length);
+        verbose("KCPClient write data length = " + chunk.length);
         this.kcp.send(chunk);
         callback();
     }
@@ -41,7 +39,7 @@ export class KCPStream extends Duplex {
     // tslint:disable-next-line:no-empty
     public _read(size: number) { }
     private feed(data: Buffer) {
-        log("KCPClient feed data length = " + data.length);
+        verbose("KCPClient feed data length = " + data.length);
         this.kcp.input(data);
         const buffer = this.kcp.recv();
         if (buffer) {

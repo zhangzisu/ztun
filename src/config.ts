@@ -4,7 +4,13 @@ import { join } from "path";
 // export const config = require(join(__dirname, "..", "config"));
 
 export const config = {
-    conv: 666,
+    common: {
+        conv: 666,
+        nodelay: 1,
+        interval: 50,
+        resend: 2,
+        nc: 1,
+    },
     client: {
         socks5: {
             enable: true,
