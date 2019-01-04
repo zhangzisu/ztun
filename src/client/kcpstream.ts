@@ -1,14 +1,10 @@
 import { createSocket, Socket } from "dgram";
 import { KCP } from "jskcp";
 import { Duplex, DuplexOptions } from "stream";
+import { config } from "../config";
 import { log } from "./log";
 
 const interval = 50;
-
-export interface IConnectionInfo {
-    host: string;
-    port: number;
-}
 
 export class KCPStream extends Duplex {
     private client: Socket;
@@ -17,7 +13,7 @@ export class KCPStream extends Duplex {
     constructor(serverContext: any, options?: DuplexOptions) {
         super(options);
         this.client = createSocket("udp4");
-        this.kcp = new KCP(666, serverContext);
+        this.kcp = new KCP(config.conv, serverContext);
         this.kcp.nodelay(1, interval, 2, 1);
         this.kcp.output((data, size, context) => this.client.send(data, 0, size, context.port, context.address));
         this.updateIntervalID = setInterval(() => {

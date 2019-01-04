@@ -1,3 +1,6 @@
+import { config } from "../config";
 import { server } from "./kcpstream";
+import { log } from "./log";
 
-server.bind(12345);
+log("server started");
+server.bind(config.server.bindPort, config.server.bindHost);
