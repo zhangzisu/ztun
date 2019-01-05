@@ -1,32 +1,18 @@
 import { createCipheriv, createDecipheriv, scryptSync } from "crypto";
 import { config } from "../config";
-import { Cipher, ConnectionType, Decipher, encodeConnectionInfo } from "../protocol";
-import { createSocks5 } from "../socks5";
-import { KCPStream } from "./kcpstream";
+import { createRemoteSession } from "../sessionmanager";
+import { createServer } from "../socks5";
 import { log, verbose } from "./log";
 
-export const createSocks5Server = () => {
+export const createSocks5Server = async () => {
     const serverContext = {
         address: config.client.serverHost,
         port: config.client.serverPort,
     };
 
-    createSocks5(config.client.socks5.bindPort, config.client.socks5.bindHost, (info, socket) => {
+    await createServer(config.client.socks5.bindPort, config.client.socks5.bindHost, (info, socket) => {
         verbose(`Connect to ${info.dstAddr}:${info.dstPort}`);
-        const stream = new KCPStream(serverContext);
-        const cipher = Cipher();
-        cipher.pipe(stream);
-        cipher.write(encodeConnectionInfo({ host: info.dstAddr, port: info.dstPort, type: ConnectionType.common }));
-        socket.pipe(cipher);
-        stream.pipe(Decipher()).pipe(socket);
-        socket.on("error", (err) => {
-            log(err.message);
-            stream.end();
-        });
-        stream.on("error", (err) => {
-            log(err.message);
-            socket.end();
-        });
+        createRemoteSession({ host: info.dstAddr, port: info.dstPort }, { host: config.server.bindHost, port: config.server.bindPort }, socket);
     });
 
     log("Socks5Server created");

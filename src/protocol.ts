@@ -1,53 +1,63 @@
-import { createCipheriv, createDecipheriv, scryptSync } from "crypto";
+import { createCipheriv, createDecipheriv, randomBytes, scryptSync } from "crypto";
 import debug = require("debug");
 import { config } from "./config";
 const log = debug("ztun:protocol");
 
-export const parseMsg = (msg: Buffer) => {
-    if (msg.length < 4) {
+export const decodeMsg = (msg: Buffer) => {
+    if (!msg || msg.length < 4) {
         return undefined;
     } else {
-        const header = msg.slice(0, 4);
+        const session = msg.slice(0, 4).readUInt32LE(0);
         const chunk = msg.slice(4);
-        // tslint:disable-next-line:no-bitwise
-        const session = ((header[0] << 8 | header[1]) << 8 | header[2]) << 8 | header[3];
         return { session, chunk };
     }
 };
 
-export enum ConnectionType {
-    common = 0x0,
-    reserve = 0x1,
-    control = 0x2,
-}
+export const encodeMsg = (session: number, data: Buffer) => {
+    const header = Buffer.allocUnsafe(4);
+    header.writeUInt32LE(session, 0);
+    return Buffer.concat([header, data]);
+};
+
+export const beatMsg = (session: number) => {
+    const header = Buffer.allocUnsafe(4);
+    header.writeUInt32LE(session, 0);
+    return header;
+};
 
 export interface IConnectionInfo {
     host: string;
     port: number;
-    type: ConnectionType;
 }
 
 export const encodeConnectionInfo = (info: IConnectionInfo) => {
     log("encode", info);
     // tslint:disable:no-bitwise
     const buffer = Buffer.alloc(256);
-    buffer.write(info.host, 0, 253);
-    buffer[253] = info.type;
-    buffer[254] = info.port & 255;
-    buffer[255] = info.port >> 8;
+    buffer.write(info.host, 0, 254);
+    buffer.writeUInt16LE(info.port, 254);
     return buffer;
 };
 
 export const decodeConnectionInfo = (info: Buffer) => {
     // tslint:disable:no-bitwise
-    const host = info.slice(0, 253).toString().replace(/\0/g, "");
-    const type = info[253];
-    const port = info[254] | info[255] << 8;
-    log("decode", host, port, type);
-    return { host, port, type };
+    if (info.length < 256) { return undefined; }
+    const host = info.slice(0, 254).toString().replace(/\0/g, "");
+    const port = info.readUInt16LE(254);
+    log("decode", host, port);
+    return { host, port, chunk: info.slice(256) };
 };
 
 const key = scryptSync(config.password, "salt", 32);
-const iv = Buffer.alloc(16, 0);
-export const Cipher = () => createCipheriv("aes-256-gcm", key, iv);
-export const Decipher = () => createDecipheriv("aes-256-gcm", key, iv);
+export const encrypt = (buffer: Buffer) => {
+    const iv = randomBytes(16);
+    const cipher = createCipheriv("aes-256-cfb", key, iv);
+    const result = Buffer.concat([iv, cipher.update(buffer), cipher.final()]);
+    return result;
+};
+export const decrypt = (buffer: Buffer) => {
+    const iv = buffer.slice(0, 16);
+    const decipher = createDecipheriv("aes-256-cfb", key, iv);
+    const result = Buffer.concat([decipher.update(buffer.slice(16)), decipher.final()]);
+    return result;
+};
