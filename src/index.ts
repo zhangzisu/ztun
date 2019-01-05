@@ -1,7 +1,8 @@
-import { createSocks5Server } from "./client/socks5";
 import { config } from "./config";
 import { log } from "./log";
+import { registerReserveProxy } from "./reverseproxy";
 import { socket } from "./sessionmanager";
+import { createSocks5Server } from "./socks5";
 
 if (config.server.enable) {
     log("server started");
@@ -13,3 +14,4 @@ if (config.socks5.enable) {
     log("socks5 started");
     createSocks5Server();
 }
+registerReserveProxy();
