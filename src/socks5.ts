@@ -1,4 +1,3 @@
-import * as axios from "axios";
 import { Socket } from "net";
 import { log } from "./client/log";
 import { config } from "./config";
@@ -28,21 +27,4 @@ export const createServer = async (port: number, host: string, cb: (info: ISocks
 export const createConnection = (port: number, host: string, cb: (socket: Socket) => void) => {
     const socks = require("sock5");
     socks.connect({ host, port, proxyHost: config.client.socks5.bindHost, proxyPort: config.client.socks5.bindPort, auths: [socks.auth.None()] }, cb);
-};
-
-export const createRequest = () => {
-    const socks = require("sock5");
-    return axios.default.create({
-        baseURL: "http://localhost:" + config.client.serverControlPort,
-        httpAgent: new socks.HttpAgent({
-            proxyHost: config.client.socks5.bindHost,
-            proxyPort: config.client.socks5.bindPort,
-            auths: [socks.auth.None()],
-        }),
-        // httpsAgent: new socks.HttpsAgent({
-        //     proxyHost: config.client.socks5.bindHost,
-        //     proxyPort: config.client.socks5.bindPort,
-        //     auths: [socks.auth.None()],
-        // }),
-    });
 };

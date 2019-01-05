@@ -10,9 +10,11 @@ export const config = {
         interval: 50,
         resend: 2,
         nc: 1,
-        mtu: 65534,
-        timeout: 20000,
-        beat: 10000,
+        mtu: 65535 - 20,
+        sndwnd: 32,
+        rcvwnd: 32,
+        timeout: 10000,
+        beat: 5000,
     },
     client: {
         socks5: {
