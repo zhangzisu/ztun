@@ -25,12 +25,10 @@ module.exports = {
         },
     ],
     server: {
-        enable: true,
-        bindPort: 6666,
-        bindHost: "localhost",
+        enable: false,
     },
     connect: {
-        port: 12345,
+        port: 6666,
         host: "localhost",
     },
     password: "233666",

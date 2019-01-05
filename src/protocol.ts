@@ -28,13 +28,17 @@ export const beatMsg = (session: number) => {
 export interface IConnectionInfo {
     host: string;
     port: number;
+    command?: number;
 }
 
 export const encodeConnectionInfo = (info: IConnectionInfo) => {
     log("encode", info);
     // tslint:disable:no-bitwise
     const buffer = Buffer.alloc(256);
-    buffer.write(info.host, 0, 254);
+    buffer.write(info.host, 0, 250);
+    if (info.command) {
+        buffer.writeUInt32LE(info.command, 250);
+    }
     buffer.writeUInt16LE(info.port, 254);
     return buffer;
 };
@@ -42,10 +46,11 @@ export const encodeConnectionInfo = (info: IConnectionInfo) => {
 export const decodeConnectionInfo = (info: Buffer) => {
     // tslint:disable:no-bitwise
     if (info.length < 256) { return undefined; }
-    const host = info.slice(0, 254).toString().replace(/\0/g, "");
+    const host = info.slice(0, 250).toString().replace(/\0/g, "");
+    const command = info.readUInt32LE(250);
     const port = info.readUInt16LE(254);
     log("decode", host, port);
-    return { host, port, chunk: info.slice(256) };
+    return { host, port, command, chunk: info.slice(256) };
 };
 
 const key = scryptSync(config.password, "salt", 32);

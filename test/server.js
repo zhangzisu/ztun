@@ -12,26 +12,13 @@ module.exports = {
         beat: 5000,
     },
     socks5: {
-        enable: true,
-        bindPort: 1081,
-        bindHost: "localhost",
+        enable: false,
     },
-    reverseProxy: [
-        {
-            remoteHost: "localhost",
-            remotePort: 1666,
-            localHost: "www.baidu.com",
-            localPort: 80,
-        },
-    ],
+    reverseProxy: [],
     server: {
         enable: true,
         bindPort: 6666,
         bindHost: "localhost",
-    },
-    connect: {
-        port: 12345,
-        host: "localhost",
     },
     password: "233666",
 };

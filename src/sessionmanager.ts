@@ -5,6 +5,7 @@ import MersenneTwister = require("mersenne-twister");
 import { AddressInfo, createConnection, Socket } from "net";
 import { config } from "./config";
 import { beatMsg, decodeConnectionInfo, decodeMsg, decrypt, encodeConnectionInfo, encodeMsg, encrypt, IConnectionInfo } from "./protocol";
+import { handleReverseProxy } from "./reverseproxy";
 
 export const socket = createSocket("udp4");
 
@@ -28,7 +29,7 @@ interface ISession {
 const sessionMap = new Map<number, KCP>();
 const sessionGenerator = new MersenneTwister();
 
-const generateSessionID = () => {
+export const generateSessionID = () => {
     let x = sessionGenerator.random_int();
     while (sessionMap.has(x)) { x = sessionGenerator.random_int(); }
     return x;
@@ -119,16 +120,22 @@ const feedConnection = (data: { session: number, chunk: Buffer }) => {
             } else {
                 const connect = decodeConnectionInfo(buffer);
                 if (connect) {
-                    bind(kcp, createConnection({ host: connect.host, port: connect.port }), connect.chunk);
-                } else {
-                    return remove(session.session, "invalid_connection");
+                    if (connect.command === 0) {
+                        return bind(kcp, createConnection({ host: connect.host, port: connect.port }), connect.chunk);
+                    } else if (connect.command === 1) {
+                        const forward = decodeConnectionInfo(connect.chunk);
+                        if (forward) {
+                            return handleReverseProxy(connect.host, connect.port, session.remoteHost, session.remotePort, forward.host, forward.port);
+                        }
+                    }
                 }
+                return remove(session.session, "invalid_connection");
             }
         }
     }
 };
 
-const createSession = (remote: IConnectionInfo, sid: number) => {
+export const createSession = (remote: IConnectionInfo, sid: number) => {
     log("createSession", sid);
     const session: ISession = {
         remoteHost: remote.host,
@@ -166,21 +173,19 @@ const createSession = (remote: IConnectionInfo, sid: number) => {
             session.upstream.resume();
         }
     }, config.common.interval);
+    sessionMap.set(session.session, kcp);
     return { session, kcp };
 };
 
 export const createRemoteSession = (info: IConnectionInfo, remote: IConnectionInfo, upstream: Socket) => {
     const { session, kcp } = createSession(remote, generateSessionID());
-    sessionMap.set(session.session, kcp);
     kcp.send(encodeConnectionInfo(info));
     bind(kcp, upstream);
 };
 
 export const handleData = (data: { session: number, chunk: Buffer }, rinfo: AddressInfo) => {
     if (!sessionMap.has(data.session)) {
-        const { session, kcp } = createSession({ host: rinfo.address, port: rinfo.port }, data.session);
-        sessionMap.set(session.session, kcp);
-        // leave the session unbinded
+        createSession({ host: rinfo.address, port: rinfo.port }, data.session);
     }
     feedConnection(data);
 };

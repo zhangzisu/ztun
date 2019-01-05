@@ -1,6 +1,7 @@
 import { Socket } from "net";
-import { log } from "./client/log";
 import { config } from "./config";
+import { log, verbose } from "./log";
+import { createRemoteSession } from "./sessionmanager";
 
 export interface ISocks5ConnectionInfo {
     srcAddr: string;
@@ -9,22 +10,23 @@ export interface ISocks5ConnectionInfo {
     dstPort: number;
 }
 
-export const createServer = async (port: number, host: string, cb: (info: ISocks5ConnectionInfo, socket: Socket) => void) => {
-    return new Promise<void>((resolve) => {
-        const socks = require("sock5");
-        const srv = socks.createServer((info: any, accept: any) => {
-            const socket = accept(true);
-            cb(info, socket);
-        });
-        srv.listen(port, host, () => {
-            log(`SOCKS server listening on port ${port}`);
-            resolve();
-        });
-        srv.useAuth(socks.auth.None());
+export const createServer = (port: number, host: string, cb: (info: ISocks5ConnectionInfo, socket: Socket) => void) => {
+    const socks = require("sock5");
+    const srv = socks.createServer((info: any, accept: any) => {
+        const socket = accept(true);
+        cb(info, socket);
     });
+    srv.listen(port, host, () => {
+        log(`SOCKS server listening on port ${port}`);
+    });
+    srv.useAuth(socks.auth.None());
 };
 
-export const createConnection = (port: number, host: string, cb: (socket: Socket) => void) => {
-    const socks = require("sock5");
-    socks.connect({ host, port, proxyHost: config.client.socks5.bindHost, proxyPort: config.client.socks5.bindPort, auths: [socks.auth.None()] }, cb);
+export const createSocks5Server = async () => {
+    await createServer(config.socks5.bindPort, config.socks5.bindHost, (info, socket) => {
+        verbose(`Connect to ${info.dstAddr}:${info.dstPort}`);
+        createRemoteSession({ host: info.dstAddr, port: info.dstPort }, { host: config.connect.host, port: config.connect.port }, socket);
+    });
+
+    log("Socks5Server created");
 };
