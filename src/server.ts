@@ -1,10 +1,14 @@
 import { createCipheriv, createDecipheriv, scryptSync } from "crypto";
+import { readFileSync } from "fs";
 import http2 = require("http2");
 import { connect } from "net";
 import { config } from "./config";
-import { decodeInfo, decodeIv, HEADER_INFO, HEADER_IV } from "./helper";
+import { decodeInfo, decodeIv, FUCK_STR, HEADER_INFO, HEADER_IV } from "./helper";
 
-const server = http2.createServer();
+const server = http2.createSecureServer({
+    key: readFileSync(config.server.key),
+    cert: readFileSync(config.server.cert),
+});
 
 server.on("error", (err) => console.error(err));
 
@@ -13,6 +17,8 @@ const PASSWORD = scryptSync(config.password, "salt", 32);
 
 server.on("stream", (stream, headers) => {
     try {
+        if (headers[http2.constants.HTTP2_HEADER_METHOD] !== "POST") { throw new Error(FUCK_STR); }
+
         const info = decodeInfo(headers[HEADER_INFO] as string);
         const iv = decodeIv(headers[HEADER_IV] as string);
 
@@ -32,6 +38,13 @@ server.on("stream", (stream, headers) => {
         });
     } catch (e) {
         console.log(e.message);
+        if (e.message === FUCK_STR) {
+            stream.respond({
+                "content-type": "text/html",
+                ":status": 200,
+            });
+            stream.end("<h1>Hello World</h1>");
+        }
     }
 });
 
