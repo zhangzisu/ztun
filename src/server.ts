@@ -8,6 +8,7 @@ import { decodeInfo, decodeIv, FUCK_STR, HEADER_INFO, HEADER_IV } from "./helper
 const server = http2.createSecureServer({
     key: readFileSync(config.server.key),
     cert: readFileSync(config.server.cert),
+    allowHTTP1: true,
 });
 
 server.on("error", (err) => console.error(err));
