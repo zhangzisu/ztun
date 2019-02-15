@@ -5,20 +5,15 @@ import { connect } from "net";
 import { config } from "./config";
 import { decodeInfo, decodeIv, FUCK_STR, HEADER_INFO, HEADER_IV } from "./helper";
 
+// tslint:disable-next-line: no-var-requires
+const PASSWORD = scryptSync(config.password, "salt", 32);
+
 const server = http2.createSecureServer({
     key: readFileSync(config.server.key),
     cert: readFileSync(config.server.cert),
-    allowHTTP1: true,
-}, (req, res) => {
-    if (req.httpVersion !== "2.0") {
-        res.end(`<h1>${req.httpVersion} is not supported</h1>`);
-    }
 });
 
 server.on("error", (err) => console.error(err));
-
-// tslint:disable-next-line: no-var-requires
-const PASSWORD = scryptSync(config.password, "salt", 32);
 
 server.on("stream", (stream, headers) => {
     try {
