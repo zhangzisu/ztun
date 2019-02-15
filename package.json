@@ -1,17 +1,9 @@
 {
   "dependencies": {
-    "debug": "^4.1.1",
-    "ip": "^1.1.5",
-    "jskcp": "^1.0.0",
-    "mersenne-twister": "^1.1.0",
-    "path": "^0.12.7",
     "sock5": "^0.0.1",
     "typescript": "^3.2.2"
   },
   "devDependencies": {
-    "@types/debug": "^0.0.31",
-    "@types/ip": "^1.1.0",
-    "@types/mersenne-twister": "^1.1.2",
     "@types/node": "^10.12.18",
     "tslint": "^5.12.0"
   },
