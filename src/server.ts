@@ -1,8 +1,7 @@
-import { createCipheriv, createDecipheriv, createHash, scryptSync } from "crypto";
+import { createCipheriv, createDecipheriv, scryptSync } from "crypto";
 import http2 = require("http2");
 import { connect } from "net";
 import { decodeInfo, decodeIv, HEADER_INFO, HEADER_IV } from "./helper";
-import { ISocks5ConnectionInfo } from "./sock5";
 
 const server = http2.createServer();
 
@@ -35,4 +34,4 @@ server.on("stream", (stream, headers) => {
     }
 });
 
-server.listen(8443);
+server.listen(80);

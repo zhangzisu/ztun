@@ -12,6 +12,7 @@ export const encodeInfo = (info: ISocks5ConnectionInfo) => {
 };
 
 export const decodeInfo = (str: string) => {
+    if (str.length < 4) { throw new Error("Invalid header"); }
     const base64 = str.substr(4);
     const buffer = Buffer.from(base64, "base64");
     const json = buffer.toString();
@@ -24,6 +25,7 @@ export const encodeIv = (iv: Buffer) => {
 };
 
 export const decodeIv = (str: string) => {
+    if (str.length < 5) { throw new Error("Invalid header"); }
     const base64 = str.substr(5);
     return Buffer.from(base64, "base64");
 };

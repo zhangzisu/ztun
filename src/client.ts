@@ -3,11 +3,13 @@ import http2 = require("http2");
 import { encodeInfo, encodeIv, HEADER_INFO, HEADER_IV } from "./helper";
 import { createSock5 } from "./sock5";
 
+// tslint:disable-next-line: no-var-requires
+const server = require("../config").server;
 let client: http2.ClientHttp2Session;
 
 const refreshSession = () => {
     console.log("Refreshing session...");
-    client = http2.connect("http://localhost:8443");
+    client = http2.connect(server);
     client.on("error", (err) => {
         console.error(err);
         refreshSession();
