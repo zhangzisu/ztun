@@ -1,10 +1,11 @@
 import { createCipheriv, createDecipheriv, createHash, randomBytes, scryptSync } from "crypto";
 import http2 = require("http2");
+import { config } from "./config";
 import { encodeInfo, encodeIv, HEADER_INFO, HEADER_IV } from "./helper";
 import { createSock5 } from "./sock5";
 
 // tslint:disable-next-line: no-var-requires
-const server = require("../config").server;
+const server = config.client.serverAddr;
 let client: http2.ClientHttp2Session;
 
 const refreshSession = () => {
@@ -19,10 +20,10 @@ const refreshSession = () => {
 refreshSession();
 
 // tslint:disable-next-line: no-var-requires
-const PASSWORD = scryptSync(require("../config").password, "salt", 32);
+const PASSWORD = scryptSync(config.password, "salt", 32);
 const IV_LENGTH = 16;
 
-createSock5(1080, "localhost", (info, socket) => {
+createSock5(config.client.port, config.client.hostname, (info, socket) => {
     try {
         const iv = randomBytes(IV_LENGTH);
 

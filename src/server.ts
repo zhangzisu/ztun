@@ -1,6 +1,7 @@
 import { createCipheriv, createDecipheriv, scryptSync } from "crypto";
 import http2 = require("http2");
 import { connect } from "net";
+import { config } from "./config";
 import { decodeInfo, decodeIv, HEADER_INFO, HEADER_IV } from "./helper";
 
 const server = http2.createServer();
@@ -8,7 +9,7 @@ const server = http2.createServer();
 server.on("error", (err) => console.error(err));
 
 // tslint:disable-next-line: no-var-requires
-const PASSWORD = scryptSync(require("../config").password, "salt", 32);
+const PASSWORD = scryptSync(config.password, "salt", 32);
 
 server.on("stream", (stream, headers) => {
     try {
@@ -34,4 +35,4 @@ server.on("stream", (stream, headers) => {
     }
 });
 
-server.listen(80);
+server.listen(config.server.port, config.server.hostname);
