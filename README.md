@@ -1,2 +1,2 @@
-# ztun
-ZhangZisu's tunnel
+# ZTun
+API Tunnel built for speed
