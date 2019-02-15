@@ -4,6 +4,8 @@ import { config } from "./config";
 import { encodeInfo, encodeIv, HEADER_INFO, HEADER_IV } from "./helper";
 import { createSock5 } from "./sock5";
 
+process.env.NODE_TLS_REJECT_UNAUTHORIZED = "0";
+
 // tslint:disable-next-line: no-var-requires
 const server = config.client.serverAddr;
 let client: http2.ClientHttp2Session;

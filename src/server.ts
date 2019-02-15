@@ -9,6 +9,10 @@ const server = http2.createSecureServer({
     key: readFileSync(config.server.key),
     cert: readFileSync(config.server.cert),
     allowHTTP1: true,
+}, (req, res) => {
+    if (req.httpVersion !== "2.0") {
+        res.end(`<h1>${req.httpVersion} is not supported</h1>`);
+    }
 });
 
 server.on("error", (err) => console.error(err));
