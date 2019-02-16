@@ -1,12 +1,10 @@
 import { createCipheriv, createDecipheriv, createHash, randomBytes, scryptSync } from "crypto";
 import http2 = require("http2");
-import { config } from "./config";
-import { calcHash, encodeInfo, encodeIv, HEADER_HASH, HEADER_INFO, HEADER_IV } from "./helper";
-import { createSock5 } from "./sock5";
+import { calcHash, config, encodeInfo, encodeIv, HEADER_HASH, HEADER_INFO, HEADER_IV } from "../../common";
+import { createSock5 } from "./socks5";
 
 process.env.NODE_TLS_REJECT_UNAUTHORIZED = "0";
 
-// tslint:disable-next-line: no-var-requires
 const server = config.client.serverAddr;
 let client: http2.ClientHttp2Session;
 
@@ -21,7 +19,6 @@ const refreshSession = () => {
 
 refreshSession();
 
-// tslint:disable-next-line: no-var-requires
 const PASSWORD = scryptSync(config.password, "salt", 32);
 const IV_LENGTH = 16;
 

@@ -1,0 +1,11 @@
+{
+  "name": "client",
+  "version": "1.0.0",
+  "main": "dist/index.js",
+  "repository": "https://github.com/ZhangZisu/ztun.git",
+  "author": "ZhangZisu",
+  "license": "MIT",
+  "dependencies": {
+    "sock5": "^0.0.1"
+  }
+}

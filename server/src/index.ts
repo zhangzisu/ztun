@@ -1,7 +1,6 @@
 import { readFileSync } from "fs";
 import http2 = require("http2");
-import { config } from "./config";
-import { calcHash, decodeInfo, decodeIv, HEADER_HASH, HEADER_INFO, HEADER_IV } from "./helper";
+import { calcHash, config, decodeInfo, decodeIv, HEADER_HASH, HEADER_INFO, HEADER_IV } from "../../common";
 import { proxyHandler } from "./proxyHandler";
 import { requestHandler } from "./requestHandler";
 
@@ -29,3 +28,5 @@ server.on("stream", (stream, headers) => {
 });
 
 server.listen(config.server.port, config.server.hostname);
+
+console.log(`Server READY on ${config.server.hostname}:${config.server.port}`);

@@ -1,15 +1,21 @@
 import { scryptSync } from "crypto";
-import http2 = require("http2");
+import { constants } from "http2";
 import { config } from "./config";
-import { ISocks5ConnectionInfo } from "./sock5";
 
 export const FUCK_STR = "FUCKFUL ERROR";
 
-export const HEADER_INFO = http2.constants.HTTP2_HEADER_COOKIE;
-export const HEADER_IV = http2.constants.HTTP2_HEADER_AUTHORIZATION;
-export const HEADER_HASH = http2.constants.HTTP2_HEADER_ETAG;
+export const HEADER_INFO = constants.HTTP2_HEADER_COOKIE;
+export const HEADER_IV = constants.HTTP2_HEADER_AUTHORIZATION;
+export const HEADER_HASH = constants.HTTP2_HEADER_ETAG;
 
-export const encodeInfo = (info: ISocks5ConnectionInfo) => {
+export interface ISocks5ConnectInfo {
+    srcAddr: string;
+    srcPort: number;
+    dstAddr: string;
+    dstPort: number;
+}
+
+export const encodeInfo = (info: ISocks5ConnectInfo) => {
     const json = JSON.stringify(info);
     const buffer = Buffer.from(json);
     const base64 = buffer.toString("base64");

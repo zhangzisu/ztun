@@ -1,13 +1,7 @@
 import { Socket } from "net";
+import { ISocks5ConnectInfo } from "../../common";
 
-export interface ISocks5ConnectionInfo {
-    srcAddr: string;
-    srcPort: number;
-    dstAddr: string;
-    dstPort: number;
-}
-
-export const createSock5 = (port: number, host: string, cb: (info: ISocks5ConnectionInfo, socket: Socket) => void) => {
+export const createSock5 = (port: number, host: string, cb: (info: ISocks5ConnectInfo, socket: Socket) => void) => {
     const socks = require("sock5");
     const srv = socks.createServer((info: any, accept: any) => {
         const socket = accept(true);
