@@ -15,5 +15,10 @@
   "main": "dist/index.js",
   "repository": "https://github.com/ZhangZisu/ztun.git",
   "author": "ZhangZisu <admin@zhangzisu.cn>",
-  "license": "MIT"
+  "license": "MIT",
+  "scripts": {
+    "rinstall": "cd common && yarn && cd .. && cd server && yarn && cd .. && cd client && yarn",
+    "rcompile": "cd common && tsc && cd .. && cd server && tsc && cd .. && cd client && tsc",
+    "postinstall": "yarn rinstall && yarn rcompile"
+  }
 }
