@@ -8,8 +8,8 @@ import { StreamCounter } from "./streamcounter";
 
 const IV_LENGTH = 16;
 const PASSWORD = scryptSync(config.password, "salt", 32);
-const MAX_DURATION = 15 * 60; // 15 min
-const MAX_IDLE = 30; // 30 sec
+const MAX_DURATION = 15 * 60;
+const MAX_IDLE = 10;
 
 export class Connection {
     public inbound = 0;
@@ -19,7 +19,6 @@ export class Connection {
     public duration = 0;
     public idle = 0;
     public count = 0;
-    public paused = true;
 
     private id: string;
     private address: string;
@@ -36,33 +35,30 @@ export class Connection {
         this.address = address;
         this.checkInterval = setInterval(() => this.check(), 1000);
     }
-    public close() {
+    public pause() {
         if (this.session && !this.session.closed) {
+            this.log("closing session");
             this.session.close();
         }
     }
-    public pause() {
-        if (this.paused) { return; }
-        this.log("paused");
-        this.paused = true;
-        this.close();
-    }
     public resume() {
-        if (!this.paused) { return; }
-        this.log("resume");
-        this.paused = false;
-        this.refreshSession();
+        if (this.isIdle()) {
+            this.log("resuming session");
+            this.connect();
+        }
     }
-    public refreshSession() {
-        this.close();
-        if (this.paused) { return; }
-        this.log("refreshing session");
+    public connect() {
         this.duration = 0;
         this.session = connect(this.address);
         this.session.on("error", (e) => {
             this.log(e.message);
             this.refreshSession();
         });
+    }
+    public refreshSession() {
+        this.log("refreshing session");
+        this.pause();
+        this.connect();
     }
     public handle(socket: Socket, info: ISocks5ConnectInfo) {
         this.resume();
@@ -103,12 +99,15 @@ export class Connection {
         socket.on("end", () => tryEnd());
         stream.on("end", () => tryEnd());
     }
+    public isIdle() {
+        return !this.session || this.session.closed;
+    }
     private check() {
         this.inboundLastSec = this.inbound - this.lastInbound;
         this.outboundLastSec = this.outbound - this.lastOutbound;
         this.lastInbound = this.inbound;
         this.lastOutbound = this.outbound;
-        if (!this.paused) {
+        if (!this.isIdle()) {
             if (this.count) {
                 this.idle = 0;
             } else {
