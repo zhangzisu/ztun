@@ -13,5 +13,6 @@ export const config: {
         port: number;
         hostname: string;
         serverAddr: string;
+        parallel: number;
     },
 } = require("../../config");
