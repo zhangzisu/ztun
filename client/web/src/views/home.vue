@@ -1,14 +1,17 @@
 <template>
-  <v-container grid-list-md>
-    <v-layout row>
-      <v-flex xs12>
-        <general :info="info.general" :statistics="statistics"/>
+  <v-container grid-list-md fluid>
+    <v-layout row wrap>
+      <v-flex xs12 md4 lg2>
+        <general :info="info.general" class="fill-height"/>
+      </v-flex>
+      <v-flex xs12 md8 lg10>
+        <statistics :info="statistics" class="fill-height"/>
       </v-flex>
     </v-layout>
     <v-layout>
       <v-flex xs12>
         <v-data-iterator :rows-per-page-items="[-1]" :items="info.details" content-tag="v-layout" row wrap>
-          <v-flex slot="item" slot-scope="props" xs12 md6 lg4>
+          <v-flex slot="item" slot-scope="props" xs12 md6 lg4 xl3>
             <detail :info="props.item" v-model="showDetails"/>
           </v-flex>
         </v-data-iterator>
@@ -21,6 +24,7 @@
 import { formatData } from '../util'
 import general from '../components/general.vue'
 import detail from '../components/detail.vue'
+import statistics from '../components/statistics.vue'
 
 const len = 60
 const updateInterval = 2 * 1000
@@ -29,7 +33,8 @@ export default {
   name: 'home',
   components: {
     general,
-    detail
+    detail,
+    statistics
   },
   data: () => ({
     info: {
