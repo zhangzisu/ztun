@@ -3,7 +3,7 @@ import { connections } from ".";
 
 export const api = Router();
 
-api.get("/", (req, res) => {
+api.get("/info", (req, res) => {
     const details = connections.map((c) => ({
         inbound: {
             total: c.inbound,
@@ -16,6 +16,8 @@ api.get("/", (req, res) => {
         status: c.isIdle() ? "Idle" : "Active",
         connections: c.count,
         duration: c.duration,
+        id: c.id,
+        address: c.address,
     }));
     const general = {
         inbound: {
@@ -26,14 +28,17 @@ api.get("/", (req, res) => {
             total: 0,
             speed: 0,
         },
-        sessions: 0,
+        sessions: {
+            total: connections.length,
+            active: 0,
+        },
     };
     for (const connection of connections) {
         general.inbound.total += connection.inbound;
         general.inbound.speed += connection.inboundLastSec;
         general.outbound.total += connection.outbound;
         general.outbound.speed += connection.outboundLastSec;
-        if (!connection.isIdle()) { general.sessions++; }
+        if (!connection.isIdle()) { general.sessions.active++; }
     }
     res.json({ general, details });
 });

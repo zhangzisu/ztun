@@ -1,5 +1,5 @@
 {
-  "name": "client",
+  "name": "ztun-client",
   "version": "1.0.0",
   "main": "dist/index.js",
   "repository": "https://github.com/ZhangZisu/ztun.git",

@@ -19,9 +19,9 @@ export class Connection {
     public duration = 0;
     public idle = 0;
     public count = 0;
+    public id: string;
+    public address: string;
 
-    private id: string;
-    private address: string;
     private session: ClientHttp2Session;
     private log: debug.Debugger;
     private checkInterval: NodeJS.Timeout;
