@@ -77,8 +77,7 @@ export default {
         .then(json => {
           this.info = json
           document.title = `Ztun ↑${this.formatData(this.info.general.outbound.speed)}/S ↓${this.formatData(this.info.general.inbound.speed)}/S`
-          const now = new Date()
-          const time = `${now.getHours()}:${now.getMinutes()}:${now.getSeconds()}`
+          const time = (new Date()).toLocaleTimeString('en', { hour12: false })
           this.statistics.inbound.shift()
           this.statistics.inbound.push([time, this.info.general.inbound.speed])
           this.statistics.outbound.shift()
