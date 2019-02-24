@@ -2,7 +2,7 @@ module.exports = {
     apps: [
         {
             name: "ZTUNClient",
-            script: "dist/index.js",
+            script: "start.js",
             autorestart: true,
             watch: false,
             max_memory_restart: "1G",
