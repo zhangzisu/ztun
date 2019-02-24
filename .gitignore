@@ -62,4 +62,5 @@ typings/
 
 dist/
 
-/config.js
+startup.*.js
+!startup.example.js

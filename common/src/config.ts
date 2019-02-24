@@ -1,18 +1,15 @@
-import { IHandler } from "./handler";
+import { join } from "path";
 
-export const config: {
-    password: string,
+export const config = {
+    password: "123456",
     server: {
-        port: number,
-        hostname: string;
-        key: string;
-        cert: string;
-        handlers: IHandler[];
+        key: join(__dirname, "..", "..", "cert", "dev-key.pem"),
+        cert: join(__dirname, "..", "..", "cert", "dev-cert.pem"),
     },
     client: {
-        port: number;
-        hostname: string;
-        serverAddr: string;
-        parallel: number;
+        port: 1080,
+        hostname: "localhost",
+        serverAddr: "https://localhost",
+        parallel: 4,
     },
-} = require("../../config");
+};

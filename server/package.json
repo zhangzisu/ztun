@@ -4,5 +4,11 @@
   "main": "dist/index.js",
   "repository": "https://github.com/ZhangZisu/ztun.git",
   "author": "ZhangZisu",
-  "license": "MIT"
+  "license": "MIT",
+  "dependencies": {
+    "connect": "^3.6.6"
+  },
+  "devDependencies": {
+    "@types/connect": "^3.4.32"
+  }
 }
