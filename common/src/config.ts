@@ -7,8 +7,6 @@ export const config = {
         cert: join(__dirname, "..", "..", "cert", "dev-cert.pem"),
     },
     client: {
-        port: 1080,
-        hostname: "localhost",
         serverAddr: "https://localhost",
         parallel: 4,
     },
