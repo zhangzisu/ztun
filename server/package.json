@@ -6,13 +6,13 @@
   "author": "ZhangZisu",
   "license": "MIT",
   "dependencies": {
-    "connect": "^3.6.6",
-    "serve-static": "^1.13.2"
+    "connect": "^3.6.6"
   },
   "devDependencies": {
     "@types/connect": "^3.4.32"
   },
   "optionalDependencies": {
-    "http-proxy-middleware": "^0.19.1"
+    "http-proxy-middleware": "^0.19.1",
+    "serve-static": "^1.13.2"
   }
 }
