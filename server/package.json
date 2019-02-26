@@ -10,5 +10,9 @@
   },
   "devDependencies": {
     "@types/connect": "^3.4.32"
+  },
+  "optionalDependencies": {
+    "connect-static-file": "^2.0.0",
+    "http-proxy-middleware": "^0.19.1"
   }
 }
