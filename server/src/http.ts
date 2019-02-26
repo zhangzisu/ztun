@@ -7,8 +7,8 @@ import { requestHandler } from "./requestHandler";
 const { HTTP2_HEADER_METHOD } = http2.constants;
 
 export const server = http2.createSecureServer({
-    key: readFileSync(config.server.key),
-    cert: readFileSync(config.server.cert),
+    key: readFileSync(config.key),
+    cert: readFileSync(config.cert),
     allowHTTP1: true,
 }, (req: any, res: any) => {
     if (req.httpVersion === "2.0") {
