@@ -13,6 +13,6 @@ srv.listen(1079, "localhost", () => {
 })
 srv.useAuth(socks.auth.None())
 
-app.listen(65056, () => {
-    console.log("Web UI Located at http://localhost:65056")
-})
+// app.listen(65056, () => {
+//     console.log("Web UI Located at http://localhost:65056")
+// })

@@ -4,7 +4,7 @@ import { ClientHttp2Session, connect, constants } from "http2";
 import { random } from "lodash";
 import { Socket } from "net";
 import { calcHash, config, encodeInfo, encodeIv, HEADER_HASH, HEADER_INFO, HEADER_IV, ISocks5ConnectInfo } from "../../common";
-import { StreamCounter } from "./streamcounter";
+import { StreamCounter } from "../../common";
 
 const IV_LENGTH = 16;
 const PASSWORD = scryptSync(config.password, "salt", 32);
@@ -29,8 +29,7 @@ export class Connection {
     private lastOutbound = 0;
 
     constructor(address: string) {
-        const uuidv4 = require("uuid/v4");
-        this.id = uuidv4();
+        this.id = require("uuid/v4")();
         this.log = debug("ztun:client:session:" + this.id);
         this.address = address;
         this.checkInterval = setInterval(() => this.check(), 1000);
