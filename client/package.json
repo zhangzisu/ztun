@@ -11,5 +11,8 @@
   },
   "devDependencies": {
     "@types/express": "^4.16.1"
+  },
+  "scripts": {
+    "postinstall": "tsc"
   }
 }

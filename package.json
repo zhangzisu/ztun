@@ -22,7 +22,9 @@
   "author": "ZhangZisu <admin@zhangzisu.cn>",
   "license": "MIT",
   "scripts": {
-    "rinstall": "cd common && yarn && cd .. && cd server && yarn && cd .. && cd client && yarn",
-    "rcompile": "cd common && tsc && cd .. && cd server && tsc && cd .. && cd client && tsc"
+    "server-install": "cd server && yarn",
+    "client-install": "cd client && yarn",
+    "common-install": "cd common && yarn",
+    "install-all": "yarn common-install && yarn server-install && yarn client-install"
   }
 }
