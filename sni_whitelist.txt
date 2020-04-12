@@ -1,0 +1,10 @@
+*.pixiv.net
+*.pixiv.org
+*.pximg.net
+*.wikipedia.org [2001:df2:e500:ed1a::1]
+*.github.com 192.30.253.118
+*.github.io 185.199.108.153
+*.githubusercontent.com 151.101.128.133
+*.githubassets.com 185.199.110.154
+*.steamcommunity.com
+
